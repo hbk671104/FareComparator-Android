@@ -3,7 +3,8 @@ package com.bk.farecomparator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.amap.api.maps.AMap;
+import com.amap.api.maps.LocationSource;
+import com.amap.api.maps.MapView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -11,7 +12,7 @@ import butterknife.ButterKnife;
 public class MapActivity extends AppCompatActivity {
 
     @BindView(R.id.main_map)
-    com.amap.api.maps.MapView mainMap;
+    MapView mainMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +22,23 @@ public class MapActivity extends AppCompatActivity {
 
         // Amap init
         mainMap.onCreate(savedInstanceState);
-        AMap aMap = mainMap.getMap();
-        aMap.setTrafficEnabled(true);
+        mainMap.getMap().setTrafficEnabled(true);
+        mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
+        mainMap.getMap().getUiSettings().setCompassEnabled(true);
+        mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
+        mainMap.getMap().setLocationSource(new LocationSource() {
+            @Override
+            public void activate(OnLocationChangedListener onLocationChangedListener) {
+                // TODO: integrate location sdk
+            }
+
+            @Override
+            public void deactivate() {
+
+            }
+        });
+        mainMap.getMap().getUiSettings().setMyLocationButtonEnabled(true);
+        mainMap.getMap().setMyLocationEnabled(true);
     }
 
     @Override
@@ -39,6 +55,7 @@ public class MapActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        super.onPause();
         mainMap.onPause();
     }
 
@@ -47,4 +64,5 @@ public class MapActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         mainMap.onSaveInstanceState(outState);
     }
+
 }
