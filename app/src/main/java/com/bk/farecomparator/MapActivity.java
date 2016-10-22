@@ -1,18 +1,24 @@
 package com.bk.farecomparator;
 
+import android.Manifest;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
+import android.util.Log;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,8 +27,6 @@ public class MapActivity extends AppCompatActivity {
 
     @BindView(R.id.main_map)
     MapView mainMap;
-    private AMapLocationClient aMapLocationClient;
-    private LocationSource.OnLocationChangedListener locationChangedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,51 +40,39 @@ public class MapActivity extends AppCompatActivity {
         mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
         mainMap.getMap().getUiSettings().setCompassEnabled(true);
         mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
-        mainMap.getMap().setLocationSource(new LocationSource() {
+        mainMap.getMap().setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
-            public void activate(OnLocationChangedListener onLocationChangedListener) {
-                // TODO: integrate location sdk
-                locationChangedListener = onLocationChangedListener;
-                aMapLocationClient.startLocation();
-            }
-
-            @Override
-            public void deactivate() {
-                locationChangedListener = null;
-                if (aMapLocationClient != null) {
-                    aMapLocationClient.stopLocation();
-                    aMapLocationClient.onDestroy();
-                }
-                aMapLocationClient = null;
+            public void onMapClick(LatLng latLng) {
+                Log.e("Click", latLng.latitude + ", " + latLng.longitude);
             }
         });
         mainMap.getMap().getUiSettings().setMyLocationButtonEnabled(true);
         mainMap.getMap().setMyLocationEnabled(true);
         mainMap.getMap().setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-
-        // Amap location client init
-        aMapLocationClient = new AMapLocationClient(this);
-        aMapLocationClient.setLocationListener(new AMapLocationListener() {
+        mainMap.getMap().setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
             @Override
-            public void onLocationChanged(AMapLocation aMapLocation) {
-                if (locationChangedListener != null && aMapLocation != null) {
-                    if (aMapLocation.getErrorCode() == 0) {
-                        locationChangedListener.onLocationChanged(aMapLocation);
-                        mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(
-                                        aMapLocation.getLatitude(),
-                                        aMapLocation.getLongitude()),
-                                15));
-                    } else {
-                        String errText = aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo();
-                        Toast.makeText(MapActivity.this, errText, Toast.LENGTH_LONG).show();
-                    }
-                }
+            public void onMyLocationChange(Location location) {
+                Log.i("Loc", location.getLatitude() + ", " + location.getLongitude());
             }
         });
-        AMapLocationClientOption option = new AMapLocationClientOption();
-        option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        aMapLocationClient.setLocationOption(option);
+
+        // Check permissions
+        Dexter.checkPermission(new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+
+            }
+
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+            }
+        }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     @Override

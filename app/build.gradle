@@ -28,8 +28,10 @@ dependencies {
     // Amap
     compile 'com.amap.api:map3d:4.1.1'
     compile 'com.amap.api:map3d-native:4.1.1'
-    compile 'com.amap.api:location:3.0.0'
+    //compile 'com.amap.api:location:3.0.0'
     compile 'com.amap.api:search:3.5.0'
+    // Dexter
+    compile 'com.karumi:dexter:2.3.1'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
