@@ -1,6 +1,7 @@
 package com.bk.farecomparator;
 
 import android.Manifest;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -9,7 +10,10 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.CircleOptions;
+import com.amap.api.maps.model.LatLng;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -28,7 +32,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
-
+    private boolean isFirstLoc = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,17 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null) {
             if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
-                Log.e("Location", aMapLocation.getLatitude() + ", " + aMapLocation.getLongitude());
+                if (isFirstLoc) {
+                    isFirstLoc = false;
+                    LatLng latLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+                    CircleOptions options = new CircleOptions()
+                            .center(latLng)
+                            .radius(50)
+                            .strokeWidth(5)
+                            .strokeColor(Color.WHITE);
+                    mainMap.getMap().addCircle(options);
+                    mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                }
             } else {
                 Log.e("Error", aMapLocation.getErrorCode() + "");
             }
