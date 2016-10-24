@@ -107,7 +107,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         if (aMapLocation != null) {
             if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
                 if (isFirstLoc) {
-                    isFirstLoc = false;
+                    isFirstLoc = !isFirstLoc;
                     LatLng latLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                     CircleOptions options = new CircleOptions()
                             .center(latLng)
