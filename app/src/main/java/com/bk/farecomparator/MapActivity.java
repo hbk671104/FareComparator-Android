@@ -8,17 +8,12 @@ import android.util.Log;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.LatLng;
 import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,12 +35,6 @@ public class MapActivity extends AppCompatActivity {
         mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
         mainMap.getMap().getUiSettings().setCompassEnabled(true);
         mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
-        mainMap.getMap().setOnMapClickListener(new AMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                Log.e("Click", latLng.latitude + ", " + latLng.longitude);
-            }
-        });
         mainMap.getMap().getUiSettings().setMyLocationButtonEnabled(true);
         mainMap.getMap().setMyLocationEnabled(true);
         mainMap.getMap().setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
@@ -72,7 +61,7 @@ public class MapActivity extends AppCompatActivity {
             public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
 
             }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }, Manifest.permission.ACCESS_COARSE_LOCATION);
     }
 
     @Override
