@@ -1,27 +1,34 @@
 package com.bk.farecomparator;
 
 import android.Manifest;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.amap.api.maps.AMap;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.MapView;
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements AMapLocationListener {
 
     @BindView(R.id.main_map)
     MapView mainMap;
+
+    // Location stuff
+    private AMapLocationClient aMapLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,51 +42,52 @@ public class MapActivity extends AppCompatActivity {
         mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
         mainMap.getMap().getUiSettings().setCompassEnabled(true);
         mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
-        mainMap.getMap().getUiSettings().setMyLocationButtonEnabled(true);
-        mainMap.getMap().setMyLocationEnabled(true);
-        mainMap.getMap().setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-        mainMap.getMap().setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
-            @Override
-            public void onMyLocationChange(Location location) {
-                Log.i("Loc", location.getLatitude() + ", " + location.getLongitude());
-            }
-        });
 
         // Check permissions
-        Dexter.checkPermission(new PermissionListener() {
+        Dexter.checkPermissions(new MultiplePermissionsListener() {
             @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
-
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                aMapLocationClient = new AMapLocationClient(MapActivity.this);
+                aMapLocationClient.setLocationListener(MapActivity.this);
+                AMapLocationClientOption option = new AMapLocationClientOption();
+                option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+                option.setNeedAddress(true);
+                aMapLocationClient.setLocationOption(option);
+                aMapLocationClient.startLocation();
             }
 
             @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
 
             }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-            }
-        }, Manifest.permission.ACCESS_COARSE_LOCATION);
+        }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mainMap.onDestroy();
+        if (aMapLocationClient != null) {
+            aMapLocationClient.onDestroy();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mainMap.onResume();
+        if (aMapLocationClient != null) {
+            aMapLocationClient.startLocation();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mainMap.onPause();
+        if (aMapLocationClient != null) {
+            aMapLocationClient.stopLocation();
+        }
     }
 
     @Override
@@ -88,4 +96,16 @@ public class MapActivity extends AppCompatActivity {
         mainMap.onSaveInstanceState(outState);
     }
 
+    // MARK: - AMapLocationListener
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null) {
+            if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
+                Log.e("Location", aMapLocation.getLatitude() + ", " + aMapLocation.getLongitude());
+            } else {
+                Log.e("Error", aMapLocation.getErrorCode() + "");
+            }
+        }
+    }
 }
