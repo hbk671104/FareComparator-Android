@@ -11,6 +11,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.karumi.dexter.Dexter;
@@ -31,6 +32,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
+    private LatLng userLatLng;
     private boolean isFirstLoc = true;
 
     @Override
@@ -107,10 +109,12 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
             if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
                 if (isFirstLoc) {
                     isFirstLoc = !isFirstLoc;
-                    LatLng latLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-                    MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+                    userLatLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(userLatLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));
                     mainMap.getMap().addMarker(markerOptions);
-                    mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
                 }
             } else {
                 Log.e("Error", aMapLocation.getErrorCode() + "");
