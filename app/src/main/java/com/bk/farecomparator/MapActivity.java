@@ -4,6 +4,8 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -25,10 +27,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends AppCompatActivity implements AMapLocationListener {
+public class MapActivity extends AppCompatActivity implements AMapLocationListener, View.OnClickListener {
 
     @BindView(R.id.main_map)
     MapView mainMap;
+    @BindView(R.id.imageButton)
+    ImageButton locateUserButton;
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
@@ -58,12 +62,14 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
                 option.setNeedAddress(true);
                 aMapLocationClient.setLocationOption(option);
-                aMapLocationClient.startLocation();
+
+                // Locate user button
+                locateUserButton.setOnClickListener(MapActivity.this);
             }
 
             @Override
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-
+                locateUserButton.setVisibility(View.GONE);
             }
         }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE);
     }
@@ -114,11 +120,24 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                             .position(userLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));
                     mainMap.getMap().addMarker(markerOptions);
-                    mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+                    resetUserLocation(userLatLng);
                 }
             } else {
                 Log.e("Error", aMapLocation.getErrorCode() + "");
             }
         }
+    }
+
+    // MARK - View.OnClickListener
+
+    @Override
+    public void onClick(View view) {
+        if (view instanceof ImageButton) {
+            resetUserLocation(userLatLng);
+        }
+    }
+
+    private void resetUserLocation(LatLng latLng) {
+        mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 }
