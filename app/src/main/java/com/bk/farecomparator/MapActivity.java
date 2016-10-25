@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.amap.api.location.AMapLocation;
@@ -37,8 +38,10 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
 
     @BindView(R.id.main_map)
     MapView mainMap;
-    @BindView(R.id.imageButton)
+    @BindView(R.id.user_location_button)
     ImageButton locateUserButton;
+    @BindView(R.id.compare_price_button)
+    Button comparePriceButton;
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
@@ -58,6 +61,9 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
         mainMap.getMap().getUiSettings().setCompassEnabled(true);
         mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
+        // Hide buttons first
+        locateUserButton.setVisibility(View.INVISIBLE);
+        comparePriceButton.setVisibility(View.INVISIBLE);
 
         // Check permissions
         Dexter.checkPermissions(new MultiplePermissionsListener() {
@@ -73,12 +79,15 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 // Camera change listener
                 mainMap.getMap().setOnCameraChangeListener(MapActivity.this);
                 // Locate user button
+                locateUserButton.setVisibility(View.VISIBLE);
+                comparePriceButton.setVisibility(View.VISIBLE);
                 locateUserButton.setOnClickListener(MapActivity.this);
             }
 
             @Override
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                 locateUserButton.setVisibility(View.GONE);
+                comparePriceButton.setVisibility(View.GONE);
             }
         }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE);
     }
