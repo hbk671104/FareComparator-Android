@@ -1,7 +1,10 @@
 package com.bk.farecomparator;
 
 import android.Manifest;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +14,11 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
 import com.karumi.dexter.Dexter;
@@ -27,7 +32,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends AppCompatActivity implements AMapLocationListener, View.OnClickListener {
+public class MapActivity extends AppCompatActivity implements AMapLocationListener,
+        View.OnClickListener, AMap.OnCameraChangeListener {
 
     @BindView(R.id.main_map)
     MapView mainMap;
@@ -38,6 +44,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     private AMapLocationClient aMapLocationClient;
     private LatLng userLatLng;
     private boolean isFirstLoc = true;
+    private boolean isFromResetUserLocation = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 option.setNeedAddress(true);
                 aMapLocationClient.setLocationOption(option);
 
+                // Camera change listener
+                mainMap.getMap().setOnCameraChangeListener(MapActivity.this);
                 // Locate user button
                 locateUserButton.setOnClickListener(MapActivity.this);
             }
@@ -123,8 +132,32 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                     resetUserLocation(userLatLng);
                 }
             } else {
-                Log.e("Error", aMapLocation.getErrorCode() + "");
+                Log.e("Error", aMapLocation.getErrorInfo());
             }
+        }
+    }
+
+    // MARK - AMap.OnCameraChangeListener
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        ColorStateList stateList = ColorStateList.valueOf(Color.GRAY);
+        if (locateUserButton.getImageTintList() != stateList) {
+            locateUserButton.setImageTintList(stateList);
+            isFromResetUserLocation = false;
+        }
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        if (isFromResetUserLocation) {
+            locateUserButton.setImageTintList(
+                    ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                    MapActivity.this, R.color.locationPrimaryColor
+                            )
+                    )
+            );
         }
     }
 
@@ -138,6 +171,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     }
 
     private void resetUserLocation(LatLng latLng) {
+        isFromResetUserLocation = true;
         mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 }
