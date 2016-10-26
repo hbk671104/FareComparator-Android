@@ -81,6 +81,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 // Locate user button
                 locateUserButton.setVisibility(View.VISIBLE);
                 comparePriceButton.setVisibility(View.VISIBLE);
+                comparePriceButton.setEnabled(false);
                 locateUserButton.setOnClickListener(MapActivity.this);
             }
 

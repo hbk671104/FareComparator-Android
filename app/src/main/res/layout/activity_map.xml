@@ -14,36 +14,36 @@
 
     </com.amap.api.maps.MapView>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:weightSum="7"
         android:padding="3dp"
         android:clipToPadding="false">
+
+        <ImageButton
+            android:id="@+id/user_location_button"
+            android:elevation="3dp"
+            android:background="@color/white"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/locate_user"
+            android:layout_alignParentEnd="true" />
 
         <Button
             android:id="@+id/compare_price_button"
             android:text="@string/compare_price"
             android:background="@color/white"
+            android:textColor="@color/locationPrimaryColor"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="6"/>
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@id/user_location_button"
+            android:layout_alignBottom="@id/user_location_button"/>
 
-        <ImageButton
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:id="@+id/user_location_button"
-            android:elevation="3dp"
-            android:background="@color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:srcCompat="@drawable/locate_user"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
