@@ -10,9 +10,7 @@
     <com.amap.api.maps.MapView
         android:id="@+id/main_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </com.amap.api.maps.MapView>
+        android:layout_height="match_parent"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,11 +24,12 @@
 
         <ImageButton
             android:id="@+id/user_location_button"
+            app:srcCompat="@drawable/locate_user"
+            android:contentDescription="@string/locate_user_description"
             android:elevation="3dp"
             android:background="@color/white"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:srcCompat="@drawable/locate_user"
             android:layout_alignParentEnd="true" />
 
         <Button
@@ -42,7 +41,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignTop="@id/user_location_button"
-            android:layout_alignBottom="@id/user_location_button"/>
+            android:layout_alignBottom="@id/user_location_button"
+            android:layout_toStartOf="@id/user_location_button"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
 
     </RelativeLayout>
 
