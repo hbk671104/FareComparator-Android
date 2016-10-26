@@ -1,4 +1,4 @@
-package com.bk.farecomparator;
+package com.bk.farecomparator.controller;
 
 import android.Manifest;
 import android.content.res.ColorStateList;
@@ -22,6 +22,7 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
+import com.bk.farecomparator.R;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;

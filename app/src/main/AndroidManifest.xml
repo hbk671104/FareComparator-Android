@@ -24,7 +24,7 @@
             android:value="b307728e0b9495adb51d5509b1e5e06d" />
         <service android:name="com.amap.api.location.APSService" />
         <activity
-            android:name=".MapActivity">
+            android:name=".controller.MapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
