@@ -81,7 +81,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 // Locate user button
                 locateUserButton.setVisibility(View.VISIBLE);
                 comparePriceButton.setVisibility(View.VISIBLE);
-                comparePriceButton.setEnabled(false);
+                togglePriceCompareButton();
                 locateUserButton.setOnClickListener(MapActivity.this);
             }
 
@@ -124,6 +124,23 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mainMap.onSaveInstanceState(outState);
+    }
+
+    // MARK: - Instance method
+
+    private void togglePriceCompareButton() {
+        if (comparePriceButton.isEnabled()) {
+            comparePriceButton.setEnabled(false);
+            comparePriceButton.setAlpha(.75f);
+        } else {
+            comparePriceButton.setEnabled(true);
+            comparePriceButton.setAlpha(1.0f);
+        }
+    }
+
+    private void resetUserLocation(LatLng latLng) {
+        isFromResetUserLocation = true;
+        mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
     // MARK: - AMapLocationListener
@@ -180,8 +197,4 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         }
     }
 
-    private void resetUserLocation(LatLng latLng) {
-        isFromResetUserLocation = true;
-        mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-    }
 }
