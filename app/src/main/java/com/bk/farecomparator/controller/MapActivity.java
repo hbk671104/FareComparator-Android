@@ -112,6 +112,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
+        // TODO: Set appropriate width
+        searchView.setMaxWidth(mainMap.getWidth() - getActionBar().getHeight());
 
         return super.onCreateOptionsMenu(menu);
     }
