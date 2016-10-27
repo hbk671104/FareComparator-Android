@@ -1,13 +1,17 @@
 package com.bk.farecomparator.controller;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -68,7 +72,6 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         comparePriceButton.setVisibility(View.INVISIBLE);
 
         // Action bar init
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // Check permissions
@@ -97,6 +100,20 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 comparePriceButton.setVisibility(View.GONE);
             }
         }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_PHONE_STATE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
