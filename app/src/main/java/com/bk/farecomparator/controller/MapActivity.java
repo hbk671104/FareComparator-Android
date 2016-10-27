@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -65,6 +66,10 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         // Hide buttons first
         locateUserButton.setVisibility(View.INVISIBLE);
         comparePriceButton.setVisibility(View.INVISIBLE);
+
+        // Action bar init
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // Check permissions
         Dexter.checkPermissions(new MultiplePermissionsListener() {
@@ -131,11 +136,15 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
 
     private void togglePriceCompareButton() {
         if (comparePriceButton.isEnabled()) {
-            comparePriceButton.setEnabled(false);
-            comparePriceButton.setAlpha(.75f);
+            comparePriceButton.setClickable(false);
+            comparePriceButton.setTextColor(Color.GRAY);
         } else {
-            comparePriceButton.setEnabled(true);
-            comparePriceButton.setAlpha(1.0f);
+            comparePriceButton.setClickable(true);
+            comparePriceButton.setTextColor(ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                            MapActivity.this, R.color.locationPrimaryColor
+                    )
+            ));
         }
     }
 
