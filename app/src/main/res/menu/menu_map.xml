@@ -4,6 +4,6 @@
     <item
         android:id="@+id/search_item"
         android:title="@string/app_name"
-        app:showAsAction="ifRoom|collapseActionView"
+        app:showAsAction="ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>
