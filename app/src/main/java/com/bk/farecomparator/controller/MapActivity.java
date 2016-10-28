@@ -2,6 +2,7 @@ package com.bk.farecomparator.controller;
 
 import android.Manifest;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -109,11 +111,17 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView)menu.findItem(R.id.search_item).getActionView();
-        // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        ComponentName poiComponent = new ComponentName(MapActivity.this, PoiSearchResultActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(poiComponent));
         searchView.setIconifiedByDefault(false);
-        // TODO: Set appropriate width
-        searchView.setMaxWidth(mainMap.getWidth() - getActionBar().getHeight());
+        // Set action bar width
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            searchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
+        }
+        // Set hint text
+        //searchView.setQueryHint("请输入目的地...");
 
         return super.onCreateOptionsMenu(menu);
     }
