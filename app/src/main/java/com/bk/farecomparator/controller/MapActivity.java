@@ -2,7 +2,6 @@ package com.bk.farecomparator.controller;
 
 import android.Manifest;
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -29,6 +28,9 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.poisearch.PoiResult;
+import com.amap.api.services.poisearch.PoiSearch;
 import com.bk.farecomparator.R;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -42,7 +44,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MapActivity extends AppCompatActivity implements AMapLocationListener,
-        View.OnClickListener, AMap.OnCameraChangeListener {
+        View.OnClickListener, AMap.OnCameraChangeListener,
+        SearchView.OnQueryTextListener, PoiSearch.OnPoiSearchListener {
 
     @BindView(R.id.main_map)
     MapView mainMap;
@@ -56,6 +59,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     private LatLng userLatLng;
     private boolean isFirstLoc = true;
     private boolean isFromResetUserLocation = false;
+    private String cityName;
+    private String provinceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +124,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
             searchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
         }
+        // Query text listener
+        searchView.setOnQueryTextListener(this);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -177,6 +184,12 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         mainMap.getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
+    private void startPOIQuery(PoiSearch.Query query) {
+        PoiSearch search = new PoiSearch(this, query);
+        search.setOnPoiSearchListener(this);
+        search.searchPOIAsyn();
+    }
+
     // MARK: - AMapLocationListener
 
     @Override
@@ -186,6 +199,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 if (isFirstLoc) {
                     isFirstLoc = !isFirstLoc;
                     userLatLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
+                    cityName = aMapLocation.getCity();
+                    provinceName = aMapLocation.getProvince();
                     MarkerOptions markerOptions = new MarkerOptions()
                             .position(userLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));
@@ -198,7 +213,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         }
     }
 
-    // MARK - AMap.OnCameraChangeListener
+    // MARK: - AMap.OnCameraChangeListener
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
@@ -222,13 +237,53 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         }
     }
 
-    // MARK - View.OnClickListener
+    // MARK: - View.OnClickListener
 
     @Override
     public void onClick(View view) {
         if (view instanceof ImageButton) {
             resetUserLocation(userLatLng);
         }
+    }
+
+    // MARK: - SearchView.OnQueryTextListener
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        if (!newText.isEmpty()) {
+            String region = (cityName.isEmpty() || cityName == null) ? provinceName : cityName;
+            PoiSearch.Query query = new PoiSearch.Query(newText, "", region);
+            query.setPageSize(10);
+            query.setCityLimit(true);
+            startPOIQuery(query);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    // MARK: - PoiSearch.OnPoiSearchListener
+
+    @Override
+    public void onPoiSearched(PoiResult poiResult, int i) {
+        if (i == 1000) {
+            if (poiResult != null && poiResult.getQuery() != null) {
+                List<PoiItem> poiItems = poiResult.getPois();
+                for (PoiItem item : poiItems) {
+                    Log.i(item.getCityName(), item.getTitle());
+                }
+            }
+        } else {
+            Log.e("Poi检索错误", "Code: " + i);
+        }
+    }
+
+    @Override
+    public void onPoiItemSearched(PoiItem poiItem, int i) {
+
     }
 
 }
