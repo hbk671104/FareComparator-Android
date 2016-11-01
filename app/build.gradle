@@ -6,13 +6,13 @@ android {
         debug {
             keyAlias 'farecomparatordev'
             keyPassword 'gelisha0924'
-            storeFile file('/Users/BK/AndroidStudioProject/FareComparator/FareComparator.jks')
+            storeFile file('/Users/BK/AndroidStudioProjects/FareComparator/FareComparator.jks')
             storePassword 'gelisha0924'
         }
         release {
             keyAlias 'farecomparatorrelease'
             keyPassword 'gelisha0924'
-            storeFile file('/Users/BK/AndroidStudioProject/FareComparator/FareComparator.jks')
+            storeFile file('/Users/BK/AndroidStudioProjects/FareComparator/FareComparator.jks')
             storePassword 'gelisha0924'
         }
     }

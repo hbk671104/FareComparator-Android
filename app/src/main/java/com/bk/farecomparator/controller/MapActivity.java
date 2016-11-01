@@ -111,8 +111,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView)menu.findItem(R.id.search_item).getActionView();
-        ComponentName poiComponent = new ComponentName(MapActivity.this, PoiSearchResultActivity.class);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(poiComponent));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
         // Set action bar width
         TypedValue tv = new TypedValue();
@@ -120,8 +119,6 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
             searchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
         }
-        // Set hint text
-        //searchView.setQueryHint("请输入目的地...");
 
         return super.onCreateOptionsMenu(menu);
     }
