@@ -1,4 +1,4 @@
-package com.bk.farecomparator.controller;
+package com.bk.farecomparator.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

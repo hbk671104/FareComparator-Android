@@ -1,4 +1,4 @@
-package com.bk.farecomparator.controller;
+package com.bk.farecomparator.activity;
 
 import android.Manifest;
 import android.app.SearchManager;
@@ -33,6 +33,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.bk.farecomparator.R;
+import com.bk.farecomparator.adapter.PoiResultAdapter;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -254,7 +255,6 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
             poiSearchListView.setVisibility(View.VISIBLE);
             String region = (cityName.isEmpty() || cityName == null) ? provinceName : cityName;
             PoiSearch.Query query = new PoiSearch.Query(newText, "", region);
-            query.setPageSize(10);
             query.setCityLimit(true);
             startPOIQuery(query);
         } else {
@@ -274,10 +274,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     public void onPoiSearched(PoiResult poiResult, int i) {
         if (i == 1000) {
             if (poiResult != null && poiResult.getQuery() != null) {
-                List<PoiItem> poiItems = poiResult.getPois();
-                for (PoiItem item : poiItems) {
-                    Log.i(item.getCityName(), item.getTitle());
-                }
+                poiSearchListView.setAdapter(new PoiResultAdapter(this, R.layout.poi_item, poiResult.getPois()));
             }
         } else {
             Log.e("Poi检索错误", "Code: " + i);
