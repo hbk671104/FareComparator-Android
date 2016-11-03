@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -53,6 +54,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     ImageButton locateUserButton;
     @BindView(R.id.compare_price_button)
     Button comparePriceButton;
+    @BindView(R.id.poi_search_list_view)
+    ListView poiSearchListView;
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
@@ -74,9 +77,6 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         mainMap.getMap().getUiSettings().setZoomControlsEnabled(false);
         mainMap.getMap().getUiSettings().setCompassEnabled(true);
         mainMap.getMap().getUiSettings().setScaleControlsEnabled(true);
-        // Hide buttons first
-        locateUserButton.setVisibility(View.INVISIBLE);
-        comparePriceButton.setVisibility(View.INVISIBLE);
 
         // Action bar init
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -114,14 +114,14 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
         getMenuInflater().inflate(R.menu.menu_map, menu);
 
         // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)menu.findItem(R.id.search_item).getActionView();
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
         // Set action bar width
         TypedValue tv = new TypedValue();
         if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
             searchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
         }
         // Query text listener
@@ -251,11 +251,14 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     @Override
     public boolean onQueryTextChange(String newText) {
         if (!newText.isEmpty()) {
+            poiSearchListView.setVisibility(View.VISIBLE);
             String region = (cityName.isEmpty() || cityName == null) ? provinceName : cityName;
             PoiSearch.Query query = new PoiSearch.Query(newText, "", region);
             query.setPageSize(10);
             query.setCityLimit(true);
             startPOIQuery(query);
+        } else {
+            poiSearchListView.setVisibility(View.GONE);
         }
         return false;
     }

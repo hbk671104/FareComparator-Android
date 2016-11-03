@@ -5,7 +5,7 @@
     android:id="@+id/activity_map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bk.farecomparator.MapActivity">
+    tools:context="com.bk.farecomparator.controller.MapActivity">
 
     <com.amap.api.maps.MapView
         android:id="@+id/main_map"
@@ -24,6 +24,7 @@
 
         <ImageButton
             android:id="@+id/user_location_button"
+            android:visibility="gone"
             app:srcCompat="@drawable/locate_user"
             android:contentDescription="@string/locate_user_description"
             android:elevation="3dp"
@@ -34,6 +35,7 @@
 
         <Button
             android:id="@+id/compare_price_button"
+            android:visibility="gone"
             android:text="@string/compare_price"
             android:background="@color/white"
             android:textColor="@color/locationPrimaryColor"
@@ -46,5 +48,12 @@
             android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
 
     </RelativeLayout>
+
+    <ListView
+        android:id="@+id/poi_search_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="gone"/>
 
 </RelativeLayout>
