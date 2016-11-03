@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.amap.api.services.core.PoiItem;
 import com.bk.farecomparator.R;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,8 +34,18 @@ public class PoiResultAdapter extends ArrayAdapter<PoiItem> {
         }
         TextView poiTitleTextView = (TextView)convertView.findViewById(R.id.poi_title_text_view);
         TextView poiTypeTextView = (TextView)convertView.findViewById(R.id.poi_type_text_view);
+        TextView poiAddressTextView = (TextView)convertView.findViewById(R.id.poi_address_text_view);
         poiTitleTextView.setText(item.getTitle());
-        poiTypeTextView.setText(item.getTypeDes());
+        // Little work on types
+        if (!item.getTypeDes().isEmpty()) {
+            if (item.getTypeDes().contains(";")) {
+                String firstItem = Arrays.asList(item.getTypeDes().split(";")).get(0);
+                poiTypeTextView.setText(firstItem);
+            } else {
+                poiTypeTextView.setText(item.getTypeDes());
+            }
+        }
+        poiAddressTextView.setText(item.getSnippet());
         return convertView;
     }
 
