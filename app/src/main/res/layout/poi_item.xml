@@ -16,48 +16,55 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:id="@+id/location_marker_image_view" />
 
-    <TextView
-        android:text="@string/poi_title"
-        android:textColor="@color/colorAccent"
-        android:textSize="15sp"
-        android:gravity="center_vertical|start"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginStart="5dp"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/location_marker_image_view"
-        android:layout_toStartOf="@+id/poi_type_text_view"
-        android:id="@+id/poi_title_text_view" />
-
-    <TextView
-        android:text="@string/poi_type"
-        android:textSize="10sp"
-        android:textColor="@color/colorAccent"
-        android:gravity="center_vertical|end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/poi_title_text_view"
-        android:layout_alignBottom="@+id/poi_title_text_view"
         android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="5dp"
-        android:id="@+id/poi_type_text_view" />
+        android:layout_toEndOf="@id/location_marker_image_view">
 
-    <TextView
-        android:text="@string/poi_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/poi_title_text_view"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="3dp"
-        android:layout_below="@id/poi_title_text_view"
-        android:textSize="12sp"
-        android:textColor="@color/gray"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:id="@+id/poi_address_text_view" />
+        <TextView
+            android:text="@string/poi_title"
+            android:textColor="@color/colorAccent"
+            android:textSize="15sp"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/poi_type_text_view"
+            android:id="@+id/poi_title_text_view" />
+
+        <TextView
+            android:text="@string/poi_type"
+            android:textSize="10sp"
+            android:textColor="@color/colorAccent"
+            android:gravity="center_vertical|end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/poi_title_text_view"
+            android:layout_alignBottom="@+id/poi_title_text_view"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="5dp"
+            android:id="@+id/poi_type_text_view" />
+
+        <TextView
+            android:text="@string/poi_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/poi_title_text_view"
+            android:layout_marginTop="3dp"
+            android:layout_below="@id/poi_title_text_view"
+            android:textSize="12sp"
+            android:textColor="@color/gray"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:id="@+id/poi_address_text_view" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
