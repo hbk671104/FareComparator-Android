@@ -14,6 +14,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
@@ -40,6 +42,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,7 +50,7 @@ import butterknife.ButterKnife;
 
 public class MapActivity extends AppCompatActivity implements AMapLocationListener,
         View.OnClickListener, AMap.OnCameraChangeListener,
-        SearchView.OnQueryTextListener, PoiSearch.OnPoiSearchListener {
+        SearchView.OnQueryTextListener, PoiSearch.OnPoiSearchListener, AdapterView.OnItemClickListener {
 
     @BindView(R.id.main_map)
     MapView mainMap;
@@ -57,6 +60,8 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     Button comparePriceButton;
     @BindView(R.id.poi_search_list_view)
     ListView poiSearchListView;
+    // SearchView
+    SearchView poiSearchView;
 
     // Location stuff
     private AMapLocationClient aMapLocationClient;
@@ -93,13 +98,14 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
                 option.setNeedAddress(true);
                 aMapLocationClient.setLocationOption(option);
 
-                // Camera change listener
+                // Listeners
                 mainMap.getMap().setOnCameraChangeListener(MapActivity.this);
                 // Locate user button
                 locateUserButton.setVisibility(View.VISIBLE);
                 comparePriceButton.setVisibility(View.VISIBLE);
                 togglePriceCompareButton();
                 locateUserButton.setOnClickListener(MapActivity.this);
+                poiSearchListView.setOnItemClickListener(MapActivity.this);
             }
 
             @Override
@@ -116,17 +122,17 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
 
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false);
+        poiSearchView = (SearchView) menu.findItem(R.id.search_item).getActionView();
+        poiSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        poiSearchView.setIconifiedByDefault(false);
         // Set action bar width
         TypedValue tv = new TypedValue();
         if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            searchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
+            poiSearchView.setMaxWidth(mainMap.getWidth() - actionBarHeight);
         }
         // Query text listener
-        searchView.setOnQueryTextListener(this);
+        poiSearchView.setOnQueryTextListener(this);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -167,7 +173,7 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     // MARK: - Instance method
 
     private void togglePriceCompareButton() {
-        if (comparePriceButton.isEnabled()) {
+        if (comparePriceButton.isClickable()) {
             comparePriceButton.setClickable(false);
             comparePriceButton.setTextColor(Color.GRAY);
         } else {
@@ -282,8 +288,35 @@ public class MapActivity extends AppCompatActivity implements AMapLocationListen
     }
 
     @Override
-    public void onPoiItemSearched(PoiItem poiItem, int i) {
+    public void onPoiItemSearched(PoiItem poiItem, int i) {}
 
+    // MARK: - AdapterView.OnItemClickListener
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // Remove ListView
+        poiSearchListView.setVisibility(View.GONE);
+        poiSearchView.clearFocus();
+        // Set marker and animate
+        PoiItem item = (PoiItem)adapterView.getItemAtPosition(i);
+        LatLng selectedLatLng = new LatLng(item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+        MarkerOptions poiOptions = new MarkerOptions()
+                .position(selectedLatLng)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.desti_marker));
+        // Convert to marker options array
+        ArrayList<MarkerOptions> optionsList = new ArrayList<>();
+        for (Marker marker: mainMap.getMap().getMapScreenMarkers()) {
+            MarkerOptions options = marker.getOptions();
+            optionsList.add(options);
+        }
+        if (optionsList.size() >= 2) {
+            optionsList.remove(optionsList.size()-1);
+            mainMap.getMap().clear();
+        }
+        optionsList.add(poiOptions);
+        mainMap.getMap().addMarkers(optionsList, true);
+
+        // Enable price compare button
+        togglePriceCompareButton();
     }
-
 }
